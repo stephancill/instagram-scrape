@@ -1,7 +1,7 @@
 # instagram-scrape
 Scraper for Instagram built on [Chromeless](https://github.com/graphcool/chromeless).
 
-## How it works
+# How it works
 Script continuously scrolls until it reaches a specified end condition (optional), creating a file in the `scraped-urls` directory that contains links for images.
 
 ### End conditions
@@ -17,5 +17,6 @@ Script continuously scrolls until it reaches a specified end condition (optional
 * `--user`  : Profile name to scrape
 * `--tag`   : Tag to scrape
 * `--url`   : URL of a page to scrape
+
 (One is required)
 * `--max`   : Maximum links to scrape
