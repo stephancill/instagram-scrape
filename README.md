@@ -14,9 +14,9 @@ Script continuously scrolls until it reaches a specified end condition (optional
 3. Run instagram-scrape `node instagram-scrape.js` with parameters specified.
 
 ## Parameters
-* `--user`  : Profile name to scrape
-* `--tag`   : Tag to scrape
-* `--url`   : URL of a page to scrape
+* `--user`    : Profile name to scrape
+* `--tag`     : Tag to scrape
+* `--url`     : URL of a page to scrape
 
 (One is required)
-* `--max`   : Maximum links to scrape
+* `--max`     : Maximum links to scrape
