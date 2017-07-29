@@ -5,6 +5,7 @@
   "author": "Stephan Cilliers <stephanus.cilliers@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "chromeless": "^1.0.1"
+    "chromeless": "^1.0.1",
+    "minimist": "^1.2.0"
   }
 }
