@@ -1,0 +1,7 @@
+{
+  "name": "instagram-scrape",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Stephan Cilliers <stephanus.cilliers@gmail.com>",
+  "license": "MIT"
+}
