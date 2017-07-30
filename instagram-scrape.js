@@ -3,12 +3,13 @@ var argv = require('minimist')(process.argv.slice(2))
 const { Chromeless } = require("chromeless")
 const fs = require("fs")
 
+var scrollsBeforeSave = null
+
 var url = ""
 
 if (!fs.existsSync("./scraped-urls")) {
     fs.mkdirSync("./scraped-urls/")
 }
-
 
 // MARK -- Argument parsing
 if (argv.tag) {
@@ -16,11 +17,13 @@ if (argv.tag) {
     if (!fs.existsSync("./scraped-urls/tags")) {
         fs.mkdirSync("./scraped-urls/tags")
     }
+    scrollsBeforeSave = 20
 } else if (argv.user) {
     url = `https://www.instagram.com/${argv.user}`
     if (!fs.existsSync("./scraped-urls/users")) {
         fs.mkdirSync("./scraped-urls/users")
     }
+    scrollsBeforeSave = 5
 } else if (argv.url) {
     url = argv.url
 }
@@ -38,7 +41,7 @@ if (!set.has("tags")) {
     fileUrl = "users/" + fileUrl
 }
 
-const scrollsBeforeSave = 5
+
 
 // MARK -- Persistence (reading)
 var linksSet = new Set()
@@ -85,20 +88,20 @@ async function run() {
     var sameLocationCount = 0
 
     // Scroll indefinitely
-    while (sameLocationCount <= 30) {
+    while (sameLocationCount <= 40) {
 
         lastScrollLocation = currentScrollLocation
 
         // Scroll `scrollsBeforeSave` times before saving
         for (var i = 0; i < scrollsBeforeSave; i++) {
             await chromeless
-                .wait(100)
                 .scrollTo(0, Number.MAX_SAFE_INTEGER)
+                .wait(100)
         }
 
         // MARK -- Extract links
         var links = await chromeless
-            .evaluate(() => [].map.call(document.querySelectorAll("img"),a => {
+            .evaluate(() => [].map.call(Array.prototype.slice.call(document.querySelectorAll("img")),a => { // TODO: slice from length - scrollsBeforeSave * 9
                 var src = a.src
                 a.src = ""
                 return src
@@ -136,7 +139,7 @@ async function run() {
     }
 
     // End chromeless session
-    await chromeless.end()
+    // await chromeless.end()
 
 }
 
