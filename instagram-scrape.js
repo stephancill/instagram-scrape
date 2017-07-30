@@ -5,14 +5,22 @@ const fs = require("fs")
 
 var url = ""
 
-fs.mkdirSync("./scraped-urls")
+if (!fs.existsSync("./scraped-urls")) {
+    fs.mkdirSync("./scraped-urls/")
+}
+
 
 // MARK -- Argument parsing
 if (argv.tag) {
     url = `https://www.instagram.com/explore/tags/${argv.tag}`
-    fs.mkdirSync("./scraped-urls/tags")
+    if (!fs.existsSync("./scraped-urls/tags")) {
+        fs.mkdirSync("./scraped-urls/tags")
+    }
 } else if (argv.user) {
     url = `https://www.instagram.com/${argv.user}`
+    if (!fs.existsSync("./scraped-urls/users")) {
+        fs.mkdirSync("./scraped-urls/users")
+    }
 } else if (argv.url) {
     url = argv.url
 }
@@ -26,8 +34,11 @@ var set = new Set(url.split("/"))
 var arr = ["https:", "www.instagram.com", "explore", ""]
 arr.map(s => {set.delete(s)})
 var fileUrl = Array.from(set).join("/") + ".txt"
+if (!set.has("tags")) {
+    fileUrl = "users/" + fileUrl
+}
 
-const scrollsBeforeSave = 1
+const scrollsBeforeSave = 5
 
 // MARK -- Persistence (reading)
 var linksSet = new Set()
@@ -74,14 +85,14 @@ async function run() {
     var sameLocationCount = 0
 
     // Scroll indefinitely
-    while (sameLocationCount <= 20) {
+    while (sameLocationCount <= 30) {
 
         lastScrollLocation = currentScrollLocation
 
         // Scroll `scrollsBeforeSave` times before saving
         for (var i = 0; i < scrollsBeforeSave; i++) {
             await chromeless
-                .wait(500)
+                .wait(100)
                 .scrollTo(0, Number.MAX_SAFE_INTEGER)
         }
 
@@ -102,10 +113,10 @@ async function run() {
             linksSet.add(l)
         })
 
-        console.log(linksSet.size)
-
         // MARK -- Persistence (writing)
-        fs.appendFileSync(`./scraped-urls/${fileUrl}`, "\n" + newLinks.join("\n") + "\n")
+        if (newLinks.length > 0) {
+            fs.appendFileSync(`./scraped-urls/${fileUrl}`, newLinks.join("\n") + "\n")
+        }
 
         // Scrolling exit condition
         currentScrollLocation = await chromeless
@@ -113,6 +124,7 @@ async function run() {
 
         if (currentScrollLocation === lastScrollLocation) {
             sameLocationCount += 1
+            console.log(linksSet.size, sameLocationCount/40);
         } else {
             sameLocationCount = 0
         }
