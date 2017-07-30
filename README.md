@@ -19,4 +19,4 @@ Script continuously scrolls until it reaches a specified end condition (optional
 * `--url`     : URL of a page to scrape
 
 (One is required)
-* `--max`     : Maximum links to scrape
+* `--max`     : Maximum links to scrape (Optional)
