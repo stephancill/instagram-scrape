@@ -5,9 +5,12 @@ const fs = require("fs")
 
 var url = ""
 
+fs.mkdirSync("./scraped-urls")
+
 // MARK -- Argument parsing
 if (argv.tag) {
     url = `https://www.instagram.com/explore/tags/${argv.tag}`
+    fs.mkdirSync("./scraped-urls/tags")
 } else if (argv.user) {
     url = `https://www.instagram.com/${argv.user}`
 } else if (argv.url) {
@@ -19,7 +22,11 @@ if (url.length === 0) {
     process.exit()
 }
 
-const fileUrl = url.split(":")[1].split("/").join("-")
+var set = new Set(url.split("/"))
+var arr = ["https:", "www.instagram.com", "explore", ""]
+arr.map(s => {set.delete(s)})
+var fileUrl = Array.from(set).join("/") + ".txt"
+
 const scrollsBeforeSave = 1
 
 // MARK -- Persistence (reading)
@@ -80,7 +87,11 @@ async function run() {
 
         // MARK -- Extract links
         var links = await chromeless
-            .evaluate(() => [].map.call(document.querySelectorAll("img"),a => (a.src)).join())
+            .evaluate(() => [].map.call(document.querySelectorAll("img"),a => {
+                var src = a.src
+                a.src = ""
+                return src
+            }).join())
 
         links = links.split(",")
         var newLinks = []
