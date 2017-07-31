@@ -41,8 +41,6 @@ if (!set.has("tags")) {
     fileUrl = "users/" + fileUrl
 }
 
-
-
 // MARK -- Persistence (reading)
 var linksSet = new Set()
 fs.readFile(`./scraped-urls/${fileUrl}`, 'utf8', (err,data) => {
@@ -53,6 +51,8 @@ fs.readFile(`./scraped-urls/${fileUrl}`, 'utf8', (err,data) => {
     linksSet.delete("\n")
     linksSet.delete(" ")
 })
+
+var start = new Date()
 
 async function run() {
     const chromeless = new Chromeless()
@@ -101,7 +101,7 @@ async function run() {
 
         // MARK -- Extract links
         var links = await chromeless
-            .evaluate(() => [].map.call(Array.prototype.slice.call(document.querySelectorAll("img")),a => { // TODO: slice from length - scrollsBeforeSave * 9
+            .evaluate(() => [].map.call(Array.prototype.slice.call(Array.prototype.slice.call(document.querySelectorAll("img")).reverse()),a => { // TODO: slice from length - scrollsBeforeSave * 9
                 var src = a.src
                 a.src = ""
                 return src
@@ -125,21 +125,25 @@ async function run() {
         currentScrollLocation = await chromeless
             .evaluate(() => window.pageYOffset)
 
+        var timeElapsed = (new Date() - start) / 1000
+
         if (currentScrollLocation === lastScrollLocation) {
             sameLocationCount += 1
-            console.log(linksSet.size, sameLocationCount/40);
+            console.log(sameLocationCount);
         } else {
             sameLocationCount = 0
+            console.log(`${linksSet.size}\t\t${Math.round(timeElapsed*100)/100}s\t\t${Math.round(linksSet.size/timeElapsed*100)/100} links/s`);
         }
 
         // Max limit exceeded exit condition
         if (linksSet.size >= argv.max) {
             break
         }
+
     }
 
     // End chromeless session
-    // await chromeless.end()
+    await chromeless.end()
 
 }
 
