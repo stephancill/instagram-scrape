@@ -64,7 +64,7 @@ async function run() {
         .goto(url)
         .evaluate(() => {
             document.querySelectorAll("a").forEach(a => {
-                if (a.innerHTML === "Load more") {a.id = "loadMore"; console.log(a);}
+                if (a.innerHTML === "Load more") {a.id = "loadMore"}
             })
         })
 
@@ -101,8 +101,8 @@ async function run() {
 
         // MARK -- Extract links
         var links = await chromeless
-            .evaluate(() => [].map.call(Array.prototype.slice.call(Array.prototype.slice.call(document.querySelectorAll("img")).reverse()),a => { // TODO: slice from length - scrollsBeforeSave * 9
-                var src = a.src
+            .evaluate(() => Array.prototype.slice.call(document.querySelectorAll("img")).reverse().slice(0, Math.min(15 * 5, document.querySelectorAll("img").length-1)).map(a => {
+	            var src = a.src
                 a.src = ""
                 return src
             }).join())
