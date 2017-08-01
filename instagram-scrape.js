@@ -88,7 +88,7 @@ async function run() {
     var sameLocationCount = 0
 
     // Scroll indefinitely
-    while (sameLocationCount <= 40) {
+    while (sameLocationCount <= 5) {
 
         lastScrollLocation = currentScrollLocation
 
