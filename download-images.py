@@ -30,7 +30,8 @@ class DownloadThread(threading.Thread):
         name = "-".join(url.split("/")).replace(":", "")
         dest = os.path.join(self.destfolder, name)
         print ("Downloading ({}%)".format(round((self.initial_queue_size-self.queue.qsize())/self.initial_queue_size*10000)/100))
-        urllib.request.urlretrieve(url, dest)
+        if not os.path.isfile(dest):
+            urllib.request.urlretrieve(url, dest)
 
 def download(urls, destfolder, numthreads=4):
     queue = Q.Queue()
@@ -48,8 +49,9 @@ if __name__ == "__main__":
     with open(sys.argv[1]) as f:
         urls = [x.strip('\n') for x in f]
     dest = "{0}/{1}/{2}".format("scraped-images", sys.argv[1].split("/")[1], sys.argv[1].split("/")[2].split(".txt")[0])
-    print(dest)
+
     if not os.path.isdir(dest):
-        os.makedirs( dest );
+        os.makedirs( dest )
+
     downloads_count = len(urls)
     download(urls, dest)
